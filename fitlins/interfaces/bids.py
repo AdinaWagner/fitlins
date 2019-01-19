@@ -177,7 +177,7 @@ class LoadBIDSModel(SimpleInterface):
         selectors = self.inputs.selectors
 
         analysis = Analysis(model=self.inputs.model, layout=layout)
-        analysis.setup(drop_na=False, desc='preproc', **selectors)
+        analysis.setup(drop_na=False, desc='highpass', **selectors)
         self._load_level1(runtime, analysis)
         self._load_higher_level(runtime, analysis)
 
