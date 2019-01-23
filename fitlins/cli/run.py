@@ -85,7 +85,7 @@ def get_parser():
     g_bids.add_argument('--derivative-label', action='store', type=str,
                         help='execution label to append to derivative directory name')
     g_bids.add_argument('--space', action='store',
-                        choices=['MNI152NLin2009cAsym', ''],
+                        choices=['MNI152NLin2009cAsym', '', 'MNI152NLin6Sym'],
                         default='MNI152NLin2009cAsym',
                         help='registered space of input datasets. Empty value for no explicit space.')
     g_bids.add_argument('--include', action='store', default=None,
