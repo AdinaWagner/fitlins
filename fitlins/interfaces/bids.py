@@ -177,7 +177,7 @@ class LoadBIDSModel(SimpleInterface):
         selectors = self.inputs.selectors
 
         analysis = Analysis(model=self.inputs.model, layout=layout)
-        analysis.setup(drop_na=False, desc='highpass', **selectors)
+        analysis.setup(drop_na=False, desc='highpass', space='MNI152NLin6Sym', **selectors)
         self._load_level1(runtime, analysis)
         self._load_higher_level(runtime, analysis)
 
@@ -198,10 +198,10 @@ class LoadBIDSModel(SimpleInterface):
             # ents is now pretty populous
             ents.pop('suffix', None)
             ents.pop('datatype', None)
-            if 'space' in ents:
+            if 'space' not in ents:
                 # Guaranteed to be valid
-                space = ents.pop('space')
-            else:
+                # space = ents.get('space')
+            # else:
                 # Picks first match
                 spaces = set(
                     analysis.layout.get_spaces(suffix='bold',
@@ -210,19 +210,25 @@ class LoadBIDSModel(SimpleInterface):
                 if spaces:
                     spaces = sorted(list(spaces))
                     space = spaces[0]
+                    ents['space'] = space
                     if len(spaces) > 1:
                         iflogger.warning(
                             'No space was provided, but multiple spaces were detected: %s. '
                             '"Randomly" choosing the first one in alphabetical order: %s'
                             % (', '.join(spaces), space))
-                else:
-                    space = None
+                # else:
+                #    space = None
             preproc_files = analysis.layout.get(suffix='bold',
                                                 extensions=['.nii', '.nii.gz'],
-                                                space=space,
+                                                # space=space,
                                                 **ents)
-            if len(preproc_files) != 1:
-                raise ValueError('Too many BOLD files found')
+            # ATM we could get multiple entries for the same file
+            # see https://github.com/bids-standard/pybids/issues/350
+            if len(set(f.path for f in preproc_files)) != 1:
+                raise ValueError(
+                    'Too many (%d) BOLD files found: %s'
+                    % (len(preproc_files), ', '.join(preproc_files))
+                )
 
             fname = preproc_files[0].path
 
@@ -385,6 +391,7 @@ class BIDSSelect(SimpleInterface):
         self._results['bold_files'] = bold_files
         self._results['mask_files'] = mask_files
         self._results['entities'] = entities
+        # raise ValueError("We want to stop")
 
         return runtime
 
