@@ -377,9 +377,14 @@ class BIDSSelect(SimpleInterface):
                                   for f in bold_file)))
 
             # Select exactly matching mask file (may be over-cautious)
+            ## TODO: should here be the layout of the bold_file?  that one could be bids-derivatives
+            ## thus know more, e.g. space and desc.  If below the mask is selected without regards for
+            ## the space -- things will get screwed!  At least there should be a check similar to above
+            ## that when a non-unique mask -- should kaboom
             bold_ents = layout.parse_file_entities(bold_file[0].path)
             bold_ents['suffix'] = 'mask'
             bold_ents['desc'] = 'brain'
+            # TODO: seems to pick up masks for all spaces not just the one of BOLD images
             mask_file = layout.get(extensions=['.nii', '.nii.gz'], **bold_ents)
             bold_ents.pop('suffix')
             bold_ents.pop('desc')
