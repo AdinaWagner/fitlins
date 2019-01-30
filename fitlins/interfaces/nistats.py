@@ -166,6 +166,9 @@ class SecondLevelModel(NistatsBaseInterface, SimpleInterface):
             # Need to add F-test support for intercept (more than one column)
             # Currently only taking 0th column as intercept (t-test)
             weights = weights[0]
+            if all(weights == np.zeros(len(names))):
+                continue
+            # TODO: this is zero. then in turn input is an empty list
             input = (np.array(filtered_files)[weights != 0]).tolist()
             design_matrix = pd.DataFrame({'intercept': weights[weights != 0]})
 
