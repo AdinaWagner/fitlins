@@ -75,6 +75,13 @@ class FirstLevelModel(NistatsBaseInterface, SimpleInterface):
             column_names = None
             drift_model = 'cosine'
 
+        if dense.isnull().values.any():
+            dense.fillna(0, inplace=True)
+            print(
+                'I found %i NaNs in the data.'
+                'To prevent regression from failing, I am replacing those with 0.'
+                % (sum(sum(dense.isnull().values))))
+
         mat = dm.make_first_level_design_matrix(
             frame_times=np.arange(vols) * info['repetition_time'],
             events=sparse,
